@@ -108,6 +108,7 @@ namespace Microsoft.OData.CodeGen.CodeGeneration
                 text = Regex.Replace(text, "ODataT4CodeGenerator(\\.ttinclude)", this.GeneratedFileNamePrefix(serviceConfiguration.GeneratedFileNamePrefix) + "$1");
                 text = Regex.Replace(text, "(public const string MetadataDocumentUri = )\"\";", "$1@\"" + serviceConfiguration.Endpoint + "\";");
                 text = Regex.Replace(text, "(public const bool UseDataServiceCollection = ).*;", "$1" + serviceConfiguration.UseDataServiceCollection.ToString(CultureInfo.InvariantCulture).ToLower(CultureInfo.InvariantCulture) + ";");
+                text = Regex.Replace(text, "(public const bool DisableGenerationDate = ).*;", "$1" + serviceConfiguration.DisableGenerationDate.ToString(CultureInfo.InvariantCulture).ToLower(CultureInfo.InvariantCulture) + ";");
                 text = Regex.Replace(text, "(public const string NamespacePrefix = )\"\\$rootnamespace\\$\";", "$1\"" + serviceConfiguration.NamespacePrefix + "\";");
                 if (languageOption == LanguageOption.GenerateCSharpCode)
                 {
@@ -154,6 +155,7 @@ namespace Microsoft.OData.CodeGen.CodeGeneration
             ODataT4CodeGenerator t4CodeGenerator = CodeGeneratorFactory.Create();
             t4CodeGenerator.MetadataDocumentUri = metadata;
             t4CodeGenerator.UseDataServiceCollection = serviceConfiguration.UseDataServiceCollection;
+            t4CodeGenerator.DisableGenerationDate = serviceConfiguration.DisableGenerationDate;
             t4CodeGenerator.TargetLanguage =
                 languageOption == LanguageOption.GenerateCSharpCode
                     ? ODataT4CodeGenerator.LanguageOption.CSharp

@@ -19,6 +19,7 @@ namespace Microsoft.OData.CodeGen.Models
         public bool UseNamespacePrefix { get; set; }
         public string NamespacePrefix { get; set; }
         public bool UseDataServiceCollection { get; set; }
+        public bool DisableGenerationDate { get; set; }
         public bool MakeTypesInternal { get; set; }
         public bool OpenGeneratedFilesInIDE { get; set; }
         public bool GenerateMultipleFiles { get; set; }

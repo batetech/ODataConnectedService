@@ -51,6 +51,8 @@ namespace Microsoft.OData.CodeGen.Models
 
         private bool useDataServiceCollection;
 
+        private bool disableGenerationDate;
+
         private bool makeTypesInternal;
 
         private bool openGeneratedFilesInIDE;
@@ -166,6 +168,17 @@ namespace Microsoft.OData.CodeGen.Models
             set
             {
                 useDataServiceCollection = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [DataMember]
+        public bool DisableGenerationDate
+        {
+            get { return disableGenerationDate; }
+            set
+            {
+                disableGenerationDate = value;
                 OnPropertyChanged();
             }
         }
@@ -397,6 +410,7 @@ namespace Microsoft.OData.CodeGen.Models
             GeneratedFileNamePrefix = Constants.DefaultReferenceFileName;
             ServiceName = Constants.DefaultServiceName;
             UseDataServiceCollection = true; // To support entity and property tracking
+            DisableGenerationDate = false; // Whether to include Generation Date and time in generated code
             EnableNamingAlias = true; // To force upper camel case in the event that entities are named in lower camel case
             IgnoreUnexpectedElementsAndAttributes = true; // Ignore unexpected elements and attributes in the metadata document
             ExcludedBoundOperations = new List<string>();

@@ -11,6 +11,9 @@ public static class Configuration
 	// The use of DataServiceCollection enables entity and property tracking. The value must be set to true or false.
 	public const bool UseDataServiceCollection = true;
 
+	// This flag indicates whether to output the "Generation Date" with the current date/time during code generation. The value must be set to true or false.
+	public const bool DisableGenerationDate = false;
+
 	// The namespace of the client code generated. It replaces the original namespace in the metadata document,
     // unless the model has several namespaces.
 	public const string NamespacePrefix = "$rootnamespace$";

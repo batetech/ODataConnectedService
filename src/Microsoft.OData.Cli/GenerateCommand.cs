@@ -78,6 +78,14 @@ namespace Microsoft.OData.Cli
 
             this.AddOption(enableTracking);
 
+            Option disableGenerationDate = new Option<bool>(new[] { "--disable-generation-date", "-dgd" })
+            {
+                Name = "disable-generation-date",
+                Description = "Omit Generation Date from generated code."
+            };
+
+            this.AddOption(disableGenerationDate);
+
             Option upperCamelCase = new Option<bool>(new[] { "--upper-camel-case", "-ucc" })
             {
                 Name = "upper-camel-case",

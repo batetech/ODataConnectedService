@@ -66,6 +66,7 @@ namespace Microsoft.OData.CodeGen.Templates
         context = new CodeGenerationContext(this.Edmx, this.NamespacePrefix)
         {
             UseDataServiceCollection = this.UseDataServiceCollection,
+            DisableGenerationDate = this.DisableGenerationDate,
             TargetLanguage = this.TargetLanguage,
             EnableNamingAlias = this.EnableNamingAlias,
             IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
@@ -106,6 +107,7 @@ namespace Microsoft.OData.CodeGen.Templates
         context = new CodeGenerationContext(new Uri(this.MetadataDocumentUri, UriKind.Absolute), this.NamespacePrefix, proxy, this.CustomHttpHeaders)
         {
             UseDataServiceCollection = this.UseDataServiceCollection,
+            DisableGenerationDate = this.DisableGenerationDate,
             TargetLanguage = this.TargetLanguage,
             EnableNamingAlias = this.EnableNamingAlias,
             IgnoreUnexpectedElementsAndAttributes = this.IgnoreUnexpectedElementsAndAttributes,
@@ -178,6 +180,9 @@ public static class Configuration
 
 	// The use of DataServiceCollection enables entity and property tracking. The value must be set to true or false.
 	public const bool UseDataServiceCollection = true;
+
+	// This flag indicates whether to output the "Generation Date" with the current date/time during code generation. The value must be set to true or false.
+	public const bool DisableGenerationDate = false;
 
 	// The namespace of the client code generated. It replaces the original namespace in the metadata document,
     // unless the model has several namespaces.
@@ -349,6 +354,15 @@ private string namespacePrefix;
 /// true to use DataServiceCollection in the generated code, false otherwise.
 /// </summary>
 public bool UseDataServiceCollection
+{
+    get;
+    set;
+}
+
+/// <summary>
+/// Whether or not to include Generation Date and time in generated code output.
+/// </summary>
+public bool DisableGenerationDate
 {
     get;
     set;
@@ -585,6 +599,26 @@ public void ValidateAndSetUseDataServiceCollectionFromString(string inputValue)
 }
 
 /// <summary>
+/// Set the DisableGenerationDate property with the given value.
+/// </summary>
+/// <param name="inputValue">The value to set.</param>
+public void ValidateAndSetDisableGenerationDateFromString(string inputValue)
+{
+    bool boolValue;
+    if (!bool.TryParse(inputValue, out boolValue))
+    {
+        // ********************************************************************************************************
+        // To fix this error, if the current text transformation is run by the TextTemplatingFileGenerator
+        // custom tool inside Visual Studio, update the .odata.config file in the project with a valid parameter
+        // value then hit Ctrl-S to save the .tt file to refresh the code generation.
+        // ********************************************************************************************************
+        throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "The value \"{0}\" cannot be assigned to the DisableGenerationDate parameter because it is not a valid boolean value.", inputValue));
+    }
+
+    this.DisableGenerationDate = boolValue;
+}
+
+/// <summary>
 /// Tries to set the TargetLanguage property with the given value.
 /// </summary>
 /// <param name="inputValue">The value to set.</param>
@@ -731,6 +765,7 @@ private void ApplyParametersFromConfigurationClass()
     this.MetadataDocumentUri = Configuration.MetadataDocumentUri;
     this.NamespacePrefix = Configuration.NamespacePrefix;
     this.UseDataServiceCollection = Configuration.UseDataServiceCollection;
+    this.DisableGenerationDate = Configuration.DisableGenerationDate;
     this.ValidateAndSetTargetLanguageFromString(Configuration.TargetLanguage);
     this.EnableNamingAlias = Configuration.EnableNamingAlias;
     this.IgnoreUnexpectedElementsAndAttributes = Configuration.IgnoreUnexpectedElementsAndAttributes;
@@ -773,6 +808,12 @@ private void ApplyParametersFromCommandLine()
     if (!string.IsNullOrEmpty(useDataServiceCollection))
     {
         this.ValidateAndSetUseDataServiceCollectionFromString(useDataServiceCollection);
+    }
+
+    string disableGenerationDate = this.Host.ResolveParameterValue("notempty", "notempty", "DisableGenerationDate");
+    if (!string.IsNullOrEmpty(disableGenerationDate))
+    {
+        this.ValidateAndSetDisableGenerationDateFromString(disableGenerationDate);
     }
 
     string targetLanguage = this.Host.ResolveParameterValue("notempty", "notempty", "TargetLanguage");
@@ -1173,6 +1214,15 @@ public class CodeGenerationContext
     /// true to use DataServiceCollection in the generated code, false otherwise.
     /// </summary>
     public bool UseDataServiceCollection
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// Whether to output Generation Date and time in generated code. 
+    /// </summary>
+    public bool DisableGenerationDate
     {
         get;
         set;
@@ -4155,14 +4205,20 @@ this.Write(this.ToStringHelper.ToStringWithCulture(Environment.Version));
 
 this.Write("\r\n//\r\n//     Changes to this file may cause incorrect behavior and will be lost i" +
         "f\r\n//     the code is regenerated.\r\n// </auto-generated>\r\n//--------------------" +
-        "----------------------------------------------------------\r\n\r\n// Generation date" +
-        ": ");
+        "----------------------------------------------------------\r\n\r\n");
+
+
+        if (!this.context.DisableGenerationDate)
+        {
+
+this.Write("// Generation date: ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.ToString(global::System.Globalization.CultureInfo.CurrentCulture)));
 
 this.Write("\r\n");
 
 
+        }
     }
 
     internal override void WriteNamespaceStart(string fullNamespace)
@@ -6298,13 +6354,20 @@ Option Strict Off
 Option Explicit On
 
 
-'Generation date: ");
+");
+
+
+        if (!this.context.DisableGenerationDate)
+        {
+
+this.Write("\'Generation date: ");
 
 this.Write(this.ToStringHelper.ToStringWithCulture(DateTime.Now.ToString(System.Globalization.CultureInfo.CurrentCulture)));
 
 this.Write("\r\n");
 
 
+        }
     }
 
     internal override void WriteNamespaceStart(string fullNamespace)
